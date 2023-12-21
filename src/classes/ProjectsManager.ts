@@ -29,6 +29,7 @@ export class ProjectsManager {
       if (!projectsPage || !detailsPage) return;
       projectsPage.style.display = "none";
       detailsPage.style.display = "flex";
+      this.setDetailsPage(project);
     });
 
     const closeBtn = document.getElementById(`delete-project-${data.id}`);
@@ -38,6 +39,29 @@ export class ProjectsManager {
         e.stopPropagation(); // prevent parent's onclick even from firing https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
       });
     return project;
+  }
+
+  private setDetailsPage(project: Project) {
+    const detailsPage = document.getElementById("project-details");
+    if (!detailsPage) return;
+
+    const detailAttributes = [
+      "name",
+      "description",
+      "code",
+      "status",
+      "cost",
+      "userRole",
+      "finishDate",
+      "progress",
+    ];
+
+    for (const attribute of detailAttributes) {
+      const name = detailsPage.querySelector(
+        `[data-project-info='${attribute}']`
+      );
+      if (name && project[attribute]) name.textContent = project[attribute];
+    }
   }
 
   getProject(id: string) {

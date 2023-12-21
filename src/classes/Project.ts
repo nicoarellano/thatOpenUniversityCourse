@@ -4,6 +4,7 @@ export type UserRole = "Architect" | "Engineer" | "Developer" | "undefined";
 export interface IProject {
   id: string;
   name: string;
+  code: string;
   description: string;
   userRole: UserRole;
   status: ProjectStatus;
@@ -15,6 +16,7 @@ export class Project implements IProject {
   // To satisfy IProject
   id: string;
   name: string;
+  code: string;
   description: string;
   userRole: UserRole;
   status: ProjectStatus;
@@ -33,7 +35,10 @@ export class Project implements IProject {
 
     this.id = data.id;
     this.name = data.name ? data.name : "no name";
-    this.description = data.description ? data.description : "no description";
+    this.code = data.code;
+    this.description = this.description = data.description
+      ? data.description
+      : "no description";
     this.userRole = data.userRole ? data.userRole : "undefined";
     this.status = data.status ? data.status : "undefined";
     this.cost = data.cost ? data.cost : 0;
@@ -47,17 +52,6 @@ export class Project implements IProject {
     this.ui = document.createElement("div");
     this.ui.className = "project-card";
     this.ui.setAttribute("id", this.id);
-
-    const splittedName = this.name.split(" ");
-    let initials = "??";
-
-    if (this.name)
-      initials =
-        splittedName[0][0].toUpperCase() +
-        (splittedName.length > 1
-          ? splittedName[1][0].toUpperCase()
-          : splittedName[0][1]);
-
     this.ui.innerHTML = `
   <div class="card-header" style="
   display: flex;
@@ -75,7 +69,7 @@ export class Project implements IProject {
         aspect-ratio: 1;
       "
     >
-      ${initials}
+      ${this.code}
     </p>
     <div>
       <h5>${this.name}</h5>

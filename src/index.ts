@@ -41,6 +41,22 @@ if (cancelProjectModal)
     toggleModal("new-project-modal")
   );
 
+const createCode = (name: string) => {
+  const splittedName = name.split(" ");
+  let code = "??";
+
+  if (name)
+    code =
+      splittedName[0][0].toUpperCase() +
+      (splittedName.length > 1
+        ? splittedName[1][0].toUpperCase()
+        : splittedName.length > 0
+        ? splittedName[0][1]
+        : " ");
+
+  return code;
+};
+
 const projectForm = document.getElementById("new-project-form");
 projectForm && projectForm instanceof HTMLFormElement
   ? projectForm.addEventListener("submit", (e) => {
@@ -49,6 +65,7 @@ projectForm && projectForm instanceof HTMLFormElement
       const projectData: IProject = {
         id: crypto.randomUUID(),
         name: formData.get("name") as string,
+        code: createCode(formData.get("name") as string),
         description: formData.get("description") as string,
         userRole: formData.get("userRole") as UserRole,
         status: formData.get("status") as ProjectStatus,
