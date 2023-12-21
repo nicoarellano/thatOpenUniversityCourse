@@ -150,8 +150,11 @@
       <section class="page" id="project-details" style="display: none">
         <header>
           <div>
-            <h2>Hospital Center</h2>
-            <p style="color: var(--background-300)">
+            <h2 data-project-info="name">Hospital Center</h2>
+            <p
+              data-project-info="description"
+              style="color: var(--background-300)"
+            >
               Community hospital located at downtown
             </p>
           </div>
@@ -169,6 +172,7 @@
                 "
               >
                 <p
+                  data-project-info="code"
                   style="
                     display: flex;
                     justify-content: center;
@@ -188,8 +192,9 @@
               </div>
               <div style="padding: 0 2rem">
                 <div>
-                  <h5>Hospital Center</h5>
+                  <h5 data-project-info="cardName">Hospital Center</h5>
                   <p
+                    data-project-info="cardDescription"
                     style="
                       color: var(--background-300);
                       font-size: var(--font-base);
@@ -215,7 +220,7 @@
                     >
                       Status
                     </p>
-                    <p>Active</p>
+                    <p data-project-info="status">Active</p>
                   </div>
                   <div>
                     <p
@@ -226,7 +231,7 @@
                     >
                       Cost
                     </p>
-                    <p>$ 2.542.000</p>
+                    <p data-project-info="cost">$ 2.542.000</p>
                   </div>
                   <div>
                     <p
@@ -237,7 +242,7 @@
                     >
                       Role
                     </p>
-                    <p>Engineer</p>
+                    <p data-project-info="userRole">Engineer</p>
                   </div>
                   <div>
                     <p
@@ -248,7 +253,7 @@
                     >
                       Finish Date
                     </p>
-                    <p>2023-05-01</p>
+                    <p data-project-info="finishDate">2023-05-01</p>
                   </div>
                 </div>
                 <div
@@ -259,6 +264,7 @@
                   "
                 >
                   <div
+                    data-project-info="progress"
                     style="
                       width: 80%;
                       background-color: green;
