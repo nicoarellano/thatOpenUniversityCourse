@@ -62,6 +62,15 @@ export class ProjectsManager {
       );
       if (name && project[attribute]) name.textContent = project[attribute];
     }
+    const cardName = detailsPage.querySelector(
+      `[data-project-info='cardName']`
+    );
+    if (cardName) cardName.textContent = project.name;
+
+    const cardDescription = detailsPage.querySelector(
+      `[data-project-info='cardDescription']`
+    );
+    if (cardDescription) cardDescription.textContent = project.description;
   }
 
   getProject(id: string) {
