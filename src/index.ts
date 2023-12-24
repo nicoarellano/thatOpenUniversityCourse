@@ -1,3 +1,7 @@
+// Import OpenBIM components
+import * as OBC from "openbim-components";
+
+// Import Three js
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -125,82 +129,111 @@ projectsPageButton.addEventListener("click", () => {
 });
 
 // ThreeJS viewer
-const scene = new THREE.Scene();
-// scene.background = new THREE.Color("#0000ff");
+// const scene = new THREE.Scene();
+// // scene.background = new THREE.Color("#0000ff");
+
+// const viewerContainer = document.getElementById(
+//   "viewer-container"
+// ) as HTMLElement;
+
+// const camera = new THREE.PerspectiveCamera(75);
+// camera.position.x = 2;
+// camera.position.z = 5;
+// camera.position.y = 1;
+
+// const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+// const domElement = renderer.domElement;
+// domElement.style.borderRadius = "var(--border-radius)";
+// viewerContainer.append(renderer.domElement);
+
+// resizeViewer();
+
+// const boxGeometry = new THREE.BoxGeometry();
+// const lightColor = new THREE.Color("#ffffee");
+// const redColor = new THREE.Color("#ff0000");
+// const material = new THREE.MeshStandardMaterial({ color: redColor });
+// const cube = new THREE.Mesh(boxGeometry, material);
+// cube.position.y = 0.5;
+
+// const ambientLight = new THREE.AmbientLight(lightColor, 0.4);
+// const directionalLight = new THREE.DirectionalLight(lightColor, 0.8);
+// directionalLight.position.y = 10;
+// directionalLight.position.z = 15;
+
+// const axes = new THREE.AxesHelper(5);
+// const grid = new THREE.GridHelper(100, 100, "#ccc", "#777");
+// grid.material.transparent = true;
+// grid.material.opacity = 0.4;
+
+// scene.add(cube, ambientLight, directionalLight, axes, grid);
+
+// const cameraControls = new OrbitControls(camera, viewerContainer);
+
+// function renderScene() {
+//   renderer.render(scene, camera);
+//   requestAnimationFrame(renderScene);
+// }
+
+// renderScene();
+
+// function resizeViewer() {
+//   const containerDimensions = viewerContainer.getBoundingClientRect();
+//   renderer.setSize(containerDimensions.width, containerDimensions.height);
+//   const aspectRatio = containerDimensions.width / containerDimensions.height;
+//   camera.aspect = aspectRatio;
+//   camera.updateProjectionMatrix();
+// }
+
+// window.addEventListener("resize", resizeViewer);
+
+// const gui = new GUI();
+
+// const cubeControls = gui.addFolder("Cube");
+// cubeControls.add(cube.position, "x", -10, 10, 1);
+// cubeControls.add(cube.position, "y", -10, 10, 1);
+// cubeControls.add(cube.position, "z", -10, 10, 1);
+// cubeControls.addColor(cube.material, "color");
+
+// const gltfLoader = new GLTFLoader();
+// gltfLoader.load("../assets/panel_solar_2.glb", (gltf) => {
+//   scene.add(gltf.scene);
+// });
+
+// const objLoader = new OBJLoader();
+// const mtlLoader = new MTLLoader();
+// mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
+//   materials.preload();
+//   objLoader.setMaterials(materials);
+//   objLoader.load("../assets/Gear/Gear1.obj", (mesh) => {
+//     scene.add(mesh);
+//   });
+// });
+
+const viewer = new OBC.Components();
+const sceneComponent = new OBC.SimpleScene(viewer);
+
+viewer.scene = sceneComponent;
+const scene = sceneComponent.get();
+viewer.scene = sceneComponent;
+sceneComponent.setup();
+scene.background = null;
 
 const viewerContainer = document.getElementById(
   "viewer-container"
-) as HTMLElement;
+) as HTMLDivElement;
+const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer);
+viewer.renderer = rendererComponent;
 
-const camera = new THREE.PerspectiveCamera(75);
-camera.position.x = 2;
-camera.position.z = 5;
-camera.position.y = 1;
+const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer);
+viewer.camera = cameraComponent;
 
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-const domElement = renderer.domElement;
-domElement.style.borderRadius = "var(--border-radius)";
-viewerContainer.append(renderer.domElement);
-
-resizeViewer();
+viewer.init();
+cameraComponent.updateAspect();
 
 const boxGeometry = new THREE.BoxGeometry();
-const lightColor = new THREE.Color("#ffffee");
 const redColor = new THREE.Color("#ff0000");
 const material = new THREE.MeshStandardMaterial({ color: redColor });
 const cube = new THREE.Mesh(boxGeometry, material);
 cube.position.y = 0.5;
 
-const ambientLight = new THREE.AmbientLight(lightColor, 0.4);
-const directionalLight = new THREE.DirectionalLight(lightColor, 0.8);
-directionalLight.position.y = 10;
-directionalLight.position.z = 15;
-
-const axes = new THREE.AxesHelper(5);
-const grid = new THREE.GridHelper(100, 100, "#ccc", "#777");
-grid.material.transparent = true;
-grid.material.opacity = 0.4;
-
-scene.add(cube, ambientLight, directionalLight, axes, grid);
-
-const cameraControls = new OrbitControls(camera, viewerContainer);
-
-function renderScene() {
-  renderer.render(scene, camera);
-  requestAnimationFrame(renderScene);
-}
-
-renderScene();
-
-function resizeViewer() {
-  const containerDimensions = viewerContainer.getBoundingClientRect();
-  renderer.setSize(containerDimensions.width, containerDimensions.height);
-  const aspectRatio = containerDimensions.width / containerDimensions.height;
-  camera.aspect = aspectRatio;
-  camera.updateProjectionMatrix();
-}
-
-window.addEventListener("resize", resizeViewer);
-
-const gui = new GUI();
-
-const cubeControls = gui.addFolder("Cube");
-cubeControls.add(cube.position, "x", -10, 10, 1);
-cubeControls.add(cube.position, "y", -10, 10, 1);
-cubeControls.add(cube.position, "z", -10, 10, 1);
-cubeControls.addColor(cube.material, "color");
-
-const gltfLoader = new GLTFLoader();
-gltfLoader.load("../assets/panel_solar_2.glb", (gltf) => {
-  scene.add(gltf.scene);
-});
-
-const objLoader = new OBJLoader();
-const mtlLoader = new MTLLoader();
-mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
-  materials.preload();
-  objLoader.setMaterials(materials);
-  objLoader.load("../assets/Gear/Gear1.obj", (mesh) => {
-    scene.add(mesh);
-  });
-});
+scene.add(cube);
