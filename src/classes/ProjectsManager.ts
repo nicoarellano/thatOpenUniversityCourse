@@ -7,6 +7,19 @@ export class ProjectsManager {
 
   constructor(container: HTMLDivElement) {
     this.ui = container;
+    const project = this.newProject({
+      id: crypto.randomUUID(),
+      name: "Default Project",
+      code: "NN",
+      description: "This is just a default app project",
+      status: "undefined",
+      userRole: "undefined",
+      finishDate: new Date(),
+      color: "#6b8ec6",
+      progress: 0,
+      cost: 0,
+    });
+    project.ui.click();
   }
 
   newProject(data: IProject) {
@@ -52,15 +65,14 @@ export class ProjectsManager {
       "status",
       "cost",
       "userRole",
-      "finishDate",
-      "progress",
     ];
 
     for (const attribute of detailAttributes) {
       const name = detailsPage.querySelector(
         `[data-project-info='${attribute}']`
       );
-      if (name && project[attribute]) name.textContent = project[attribute];
+      if (name && (project[attribute] === 0 || project[attribute]))
+        name.textContent = project[attribute];
     }
     const cardName = detailsPage.querySelector(
       `[data-project-info='cardName']`
@@ -71,6 +83,24 @@ export class ProjectsManager {
       `[data-project-info='cardDescription']`
     );
     if (cardDescription) cardDescription.textContent = project.description;
+
+    const code = detailsPage.querySelector(
+      `[data-project-info='code']`
+    ) as HTMLElement;
+    if (code) code.style.backgroundColor = project.color;
+
+    const progress = detailsPage.querySelector(
+      `[data-project-info='progress']`
+    ) as HTMLElement;
+    if (progress) {
+      progress.style.width = `${project.progress}%`;
+      progress.textContent = `${project.progress}%`;
+    }
+
+    const finishDate = detailsPage.querySelector(
+      `[data-project-info='finishDate']`
+    );
+    if (finishDate) finishDate.textContent = project.finishDate.toDateString();
   }
 
   getProject(id: string) {

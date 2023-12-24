@@ -49,11 +49,16 @@
                 <input
                   name="name"
                   required
+                  minlength="5"
+                  maxlength="20"
                   type="text"
                   placeholder="What is the name of your project?"
                 />
                 <h6 style="color: var(--background-300); margin-top: 5px">
-                  <i>TIP: Give it a short name</i>
+                  <i
+                    >TIP: Give it a short name, not shorter than 5 characters or
+                    longer than 20</i
+                  >
                 </h6>
               </div>
               <div class="form-field-container">
@@ -305,7 +310,7 @@
                       style="width: 100%"
                     />
                   </div>
-                  <span class="material-symbols-rounded"> add </span>
+                  <span class="material-symbols-rounded icon"> add </span>
                 </div>
               </div>
               <div
@@ -346,7 +351,11 @@
               </div>
             </div>
           </div>
-          <div id="viewer-container" class="dashboard-card"></div>
+          <div
+            id="viewer-container"
+            class="dashboard-card"
+            style="min-width: 0"
+          ></div>
         </div>
       </section>
     </main>
