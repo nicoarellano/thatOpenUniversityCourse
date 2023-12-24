@@ -10,6 +10,8 @@ export interface IProject {
   status: ProjectStatus;
   cost: number;
   finishDate: Date;
+  color: string;
+  progress: number;
 }
 
 export class Project implements IProject {
@@ -22,16 +24,14 @@ export class Project implements IProject {
   status: ProjectStatus;
   cost: number;
   finishDate: Date;
+  color: string;
+  progress: number;
 
   // Class internals
   ui: HTMLDivElement;
-  progress: number = 0;
 
   constructor(data: IProject) {
-    // This helps to iterate through the data instead of creating each one. not my case
-    // for (const key in data) {
-    //   this[key] = data[key]
-    // }
+    const today = new Date();
 
     this.id = data.id;
     this.name = data.name ? data.name : "no name";
@@ -42,7 +42,9 @@ export class Project implements IProject {
     this.userRole = data.userRole ? data.userRole : "undefined";
     this.status = data.status ? data.status : "undefined";
     this.cost = data.cost ? data.cost : 0;
-    this.finishDate = data.finishDate;
+    this.finishDate = data.finishDate.getDay() ? data.finishDate : today;
+    this.color = data.color;
+    this.progress = data.progress;
     this.setUi();
   }
 
@@ -63,7 +65,7 @@ export class Project implements IProject {
       style="
         display: flex;
         align-items: center;
-        background-color: var(--secondary);
+        background-color: ${this.color};
         padding: 0.8rem;
         border-radius: 8px;
         aspect-ratio: 1;
@@ -97,7 +99,7 @@ export class Project implements IProject {
     </div>
     <div class="card-property">
       <p style="color: var(--background-300)">Progress</p>
-      <p>${this.progress * 100}%</p>
+      <p>${this.progress}%</p>
     </div>
   </div>
   `;
