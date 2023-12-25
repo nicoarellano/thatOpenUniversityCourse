@@ -230,10 +230,21 @@ viewer.camera = cameraComponent;
 viewer.init();
 cameraComponent.updateAspect();
 
-const boxGeometry = new THREE.BoxGeometry();
-const redColor = new THREE.Color("#ff0000");
-const material = new THREE.MeshStandardMaterial({ color: redColor });
-const cube = new THREE.Mesh(boxGeometry, material);
-cube.position.y = 0.5;
+// const boxGeometry = new THREE.BoxGeometry();
+// const redColor = new THREE.Color("#ff0000");
+// const material = new THREE.MeshStandardMaterial({ color: redColor });
+// const cube = new THREE.Mesh(boxGeometry, material);
+// cube.position.y = 0.5;
 
-scene.add(cube);
+// scene.add(cube);
+
+const ifcLoader = new OBC.FragmentIfcLoader(viewer);
+ifcLoader.settings.wasm = {
+  path: "https://unpkg.com/web-ifc@0.0.43/",
+  absolute: true,
+};
+
+const toolbar = new OBC.Toolbar(viewer);
+toolbar.addChild(ifcLoader.uiElement.get("main"));
+
+viewer.ui.addToolbar(toolbar);
