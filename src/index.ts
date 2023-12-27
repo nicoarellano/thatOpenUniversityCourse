@@ -221,28 +221,41 @@ scene.background = null;
 const viewerContainer = document.getElementById(
   "viewer-container"
 ) as HTMLDivElement;
-const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer);
+const rendererComponent = new OBC.PostproductionRenderer(
+  viewer,
+  viewerContainer
+);
 viewer.renderer = rendererComponent;
 
 const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer);
 viewer.camera = cameraComponent;
 
+const raycasterComponent = new OBC.SimpleRaycaster(viewer);
+viewer.raycaster = raycasterComponent;
+rendererComponent.postproduction.enabled = true;
+
 viewer.init();
 cameraComponent.updateAspect();
 
-// const boxGeometry = new THREE.BoxGeometry();
-// const redColor = new THREE.Color("#ff0000");
-// const material = new THREE.MeshStandardMaterial({ color: redColor });
-// const cube = new THREE.Mesh(boxGeometry, material);
-// cube.position.y = 0.5;
-
-// scene.add(cube);
+const classifier = new OBC.FragmentClassifier(viewer);
+const classificationWindow = new OBC.FloatingWindow(viewer);
+viewer.ui.add(classificationWindow);
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer);
 ifcLoader.settings.wasm = {
   path: "https://unpkg.com/web-ifc@0.0.43/",
   absolute: true,
 };
+
+const highlighter = new OBC.FragmentHighlighter(viewer);
+highlighter.setup();
+
+ifcLoader.onIfcLoaded.add((model) => {
+  highlighter.update();
+  classifier.byStorey(model);
+  classifier.byEntity(model);
+  console.log(classifier.get());
+});
 
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(ifcLoader.uiElement.get("main"));
