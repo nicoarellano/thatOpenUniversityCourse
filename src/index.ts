@@ -11,6 +11,7 @@ import GUI from "three/examples/jsm/libs/lil-gui.module.min";
 
 import { IProject, UserRole, ProjectStatus } from "./classes/Project";
 import { ProjectsManager } from "./classes/ProjectsManager";
+import { FragmentsGroup } from "bim-fragment";
 
 let modalOpen = false;
 const toggleModal = (id: string) => {
@@ -240,6 +241,23 @@ cameraComponent.updateAspect();
 const classifier = new OBC.FragmentClassifier(viewer);
 const classificationWindow = new OBC.FloatingWindow(viewer);
 viewer.ui.add(classificationWindow);
+classificationWindow.title = "Model Groups";
+classificationWindow.visible = false;
+
+const classificationBtn = new OBC.Button(viewer);
+classificationBtn.materialIcon = "account_tree";
+
+classificationBtn.onClick.add(() => {
+  classificationWindow.visible = !classificationWindow.visible;
+  classificationWindow.active = classificationWindow.visible;
+});
+
+const shareBtn = new OBC.Button(viewer);
+shareBtn.materialIcon = "share";
+
+shareBtn.onClick.add(() => {
+  alert("View shared!");
+});
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer);
 ifcLoader.settings.wasm = {
@@ -250,14 +268,31 @@ ifcLoader.settings.wasm = {
 const highlighter = new OBC.FragmentHighlighter(viewer);
 highlighter.setup();
 
-ifcLoader.onIfcLoaded.add((model) => {
+async function createModelTree() {
+  const fragmentTree = new OBC.FragmentTree(viewer);
+  await fragmentTree.init();
+  await fragmentTree.update(["storeys", "entities"]);
+  fragmentTree.onHovered.add((fragmentMap) => {
+    highlighter.highlightByID("hover", fragmentMap);
+  });
+  fragmentTree.onSelected.add((fragmentMap) => {
+    highlighter.highlightByID("select", fragmentMap);
+  });
+  const tree = fragmentTree.get().uiElement.get("tree");
+  return tree;
+}
+
+ifcLoader.onIfcLoaded.add(async (model) => {
   highlighter.update();
   classifier.byStorey(model);
   classifier.byEntity(model);
-  console.log(classifier.get());
+  console.log(classifier);
+  const tree = await createModelTree();
+  await classificationWindow.slots.content.dispose(true);
+  classificationWindow.addChild(tree);
 });
 
 const toolbar = new OBC.Toolbar(viewer);
-toolbar.addChild(ifcLoader.uiElement.get("main"));
+toolbar.addChild(ifcLoader.uiElement.get("main"), classificationBtn, shareBtn);
 
 viewer.ui.addToolbar(toolbar);
