@@ -268,6 +268,11 @@ ifcLoader.settings.wasm = {
 const highlighter = new OBC.FragmentHighlighter(viewer);
 highlighter.setup();
 
+const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer);
+highlighter.events.select.onClear.add(() => {
+  propertiesProcessor.cleanPropertiesList();
+});
+
 async function createModelTree() {
   const fragmentTree = new OBC.FragmentTree(viewer);
   await fragmentTree.init();
@@ -290,9 +295,20 @@ ifcLoader.onIfcLoaded.add(async (model) => {
   const tree = await createModelTree();
   await classificationWindow.slots.content.dispose(true);
   classificationWindow.addChild(tree);
+
+  propertiesProcessor.process(model);
+  highlighter.events.select.onHighlight.add((fragmentMap) => {
+    const expressID = [...Object.values(fragmentMap)[0]][0];
+    propertiesProcessor.renderProperties(model, Number(expressID));
+  });
 });
 
 const toolbar = new OBC.Toolbar(viewer);
-toolbar.addChild(ifcLoader.uiElement.get("main"), classificationBtn, shareBtn);
+toolbar.addChild(
+  ifcLoader.uiElement.get("main"),
+  classificationBtn,
+  shareBtn,
+  propertiesProcessor.uiElement.get("main")
+);
 
 viewer.ui.addToolbar(toolbar);
