@@ -262,8 +262,10 @@ shareBtn.onClick.add(() => {
 });
 
 const fragmentManager = new OBC.FragmentManager(viewer);
+
 function exportFragments(model: FragmentsGroup) {
   const fragmentBinary = fragmentManager.export(model);
+
   const blob = new Blob([fragmentBinary]);
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -301,12 +303,20 @@ async function createModelTree() {
   return tree;
 }
 
+const culler = new OBC.ScreenCuller(viewer);
+cameraComponent.controls.addEventListener(
+  "sleep",
+  () => (culler.needsUpdate = true)
+);
+
 async function onModelLoaded(model: FragmentsGroup) {
+  highlighter.update();
+  for (const fragment of model.items) culler.add(fragment.mesh);
+  culler.needsUpdate = true;
+
   try {
-    highlighter.update();
     classifier.byStorey(model);
     classifier.byEntity(model);
-    console.log(classifier);
     const tree = await createModelTree();
     await classificationWindow.slots.content.dispose(true);
     classificationWindow.addChild(tree);
@@ -321,9 +331,20 @@ async function onModelLoaded(model: FragmentsGroup) {
   }
 }
 
+const exportBtn = new OBC.Button(viewer);
+exportBtn.materialIcon = "download";
+exportBtn.tooltip = "Export Fragment";
+
 ifcLoader.onIfcLoaded.add(async (model) => {
-  exportFragments(model);
   onModelLoaded(model);
+
+  exportBtn.onClick.add(() => {
+    if (!model) {
+      alert("No model to download");
+      return;
+    }
+    exportFragments(model);
+  });
 });
 
 fragmentManager.onFragmentsLoaded.add((model) => {
@@ -359,7 +380,9 @@ toolbar.addChild(
   importFragmentBtn,
   classificationBtn,
   shareBtn,
-  propertiesProcessor.uiElement.get("main")
+  exportBtn,
+  propertiesProcessor.uiElement.get("main"),
+  fragmentManager.uiElement.get("main")
 );
 
 viewer.ui.addToolbar(toolbar);
