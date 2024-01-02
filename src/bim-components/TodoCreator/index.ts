@@ -2,11 +2,13 @@ import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { TodoCard } from "./src/TodoCard";
 
+type ToDoPriority = "Low" | "Normal" | "High";
 interface ToDo {
   description: string;
   date: Date;
   fragmentMap: OBC.FragmentIdMap;
   camera: { position: THREE.Vector3; target: THREE.Vector3 };
+  priority: ToDoPriority;
 }
 
 export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
@@ -27,7 +29,22 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     this.setUI();
   }
 
-  async addToDo(description: string) {
+  async setup() {
+    const highlighter = await this._components.tools.get(
+      OBC.FragmentHighlighter
+    );
+    highlighter.add(`${TodoCreator.uuid}-priority-Low`, [
+      new THREE.MeshStandardMaterial({ color: 0x59bc59 }),
+    ]);
+    highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [
+      new THREE.MeshStandardMaterial({ color: 0x597cff }),
+    ]);
+    highlighter.add(`${TodoCreator.uuid}-priority-High`, [
+      new THREE.MeshStandardMaterial({ color: 0xff7676 }),
+    ]);
+  }
+
+  async addToDo(description: string, priority: ToDoPriority) {
     const camera = this._components.camera;
 
     if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
@@ -51,7 +68,11 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
       date: new Date(),
       fragmentMap: highlighter.selection.select,
       camera: todoCamera,
+      priority,
     };
+
+    this._list.push(todo);
+
     const todoCard = new TodoCard(this._components);
     todoCard.description = todo.description;
     todoCard.date = todo.date;
@@ -62,7 +83,8 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
         todo.camera.position.z,
         todo.camera.target.x,
         todo.camera.target.y,
-        todo.camera.target.z
+        todo.camera.target.z,
+        true
       );
       const fragmentMapLength = Object.keys(todo.fragmentMap).length;
       if (fragmentMapLength === 0) return;
@@ -74,7 +96,7 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     console.log(todo);
   }
 
-  private setUI() {
+  private async setUI() {
     const activationButton = new OBC.Button(this._components);
     activationButton.materialIcon = "construction";
     activationButton.tooltip = "To-Do List";
@@ -87,6 +109,12 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     descriptionInput.label = "Description";
     form.slots.content.addChild(descriptionInput);
 
+    const priorityDropdown = new OBC.Dropdown(this._components);
+    priorityDropdown.label = "Priority";
+    priorityDropdown.addOption("Low", "Normal", "High");
+    priorityDropdown.value = "Normal";
+    form.slots.content.addChild(priorityDropdown);
+
     const descriptionForm = form.slots.content.get();
     descriptionForm.style.padding = "20px";
     descriptionForm.style.display = "flex";
@@ -94,8 +122,12 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     descriptionForm.style.rowGap = "20px";
 
     form.onAccept.add(() => {
-      this.addToDo(descriptionInput.value);
+      this.addToDo(
+        descriptionInput.value,
+        priorityDropdown.value as ToDoPriority
+      );
       descriptionInput.value = "";
+      priorityDropdown.value = "Normal";
       form.visible = false;
     });
 
@@ -114,6 +146,35 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     this._components.ui.add(todoList);
     todoList.visible = false;
     todoList.title = "To-Do List";
+
+    const todoListToolbar = new OBC.SimpleUIComponent(this._components);
+    todoList.addChild(todoListToolbar);
+
+    const colorizeBtn = new OBC.Button(this._components);
+    colorizeBtn.materialIcon = "format_color_fill";
+    todoListToolbar.addChild(colorizeBtn);
+
+    const highlighter = await this._components.tools.get(
+      OBC.FragmentHighlighter
+    );
+
+    colorizeBtn.onClick.add(() => {
+      colorizeBtn.active = !colorizeBtn.active;
+      if (colorizeBtn.active) {
+        for (const todo of this._list) {
+          const fragmentMapLength = Object.keys(todo.fragmentMap).length;
+          if (fragmentMapLength === 0) return;
+          highlighter.highlightByID(
+            `${TodoCreator.uuid}-priority-${todo.priority}`,
+            todo.fragmentMap
+          );
+        }
+      } else {
+        highlighter.clear(`${TodoCreator.uuid}-priority-Low`);
+        highlighter.clear(`${TodoCreator.uuid}-priority-Normal`);
+        highlighter.clear(`${TodoCreator.uuid}-priority-High`);
+      }
+    });
 
     const todoWindowBtn = new OBC.Button(this._components, {
       materialIconName: "fact_check",

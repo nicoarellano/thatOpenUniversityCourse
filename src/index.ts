@@ -407,6 +407,7 @@ importFragmentBtn.onClick.add(() => {
 });
 
 const todoCreator = new TodoCreator(viewer);
+await todoCreator.setup();
 
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(
