@@ -22,7 +22,7 @@ export class TodoCreator
   private _list: ToDo[] = [];
 
   uiElement = new OBC.UIElement<{
-    activationButton: OBC.Button;
+    activationBtn: OBC.Button;
     todoList: OBC.FloatingWindow;
   }>();
 
@@ -31,12 +31,6 @@ export class TodoCreator
     this._components = components;
     components.tools.add(TodoCreator.uuid, this);
     this.setUI();
-  }
-
-  async dispose() {
-    this.uiElement.dispose();
-    this._list = [];
-    this.enabled = false;
   }
 
   async setup() {
@@ -120,9 +114,9 @@ export class TodoCreator
   }
 
   private async setUI() {
-    const activationButton = new OBC.Button(this._components);
-    activationButton.materialIcon = "construction";
-    activationButton.tooltip = "To-Do List";
+    const activationBtn = new OBC.Button(this._components);
+    activationBtn.materialIcon = "construction";
+    activationBtn.tooltip = "To-Do List";
 
     const form = new OBC.Modal(this._components);
     this._components.ui.add(form);
@@ -213,10 +207,16 @@ export class TodoCreator
       materialIconName: "fact_check",
       tooltip: "Show list",
     });
-    activationButton.addChild(newTodoBtn, todoWindowBtn);
+    activationBtn.addChild(newTodoBtn, todoWindowBtn);
     todoWindowBtn.onClick.add(() => (todoList.visible = !todoList.visible));
 
-    this.uiElement.set({ activationButton, todoList });
+    this.uiElement.set({ activationBtn, todoList });
+  }
+
+  async dispose() {
+    this.uiElement.dispose();
+    this._list = [];
+    this.enabled = false;
   }
 
   get(): ToDo[] {

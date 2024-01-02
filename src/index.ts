@@ -13,6 +13,7 @@ import GUI from "three/examples/jsm/libs/lil-gui.module.min";
 import { IProject, UserRole, ProjectStatus } from "./classes/Project";
 import { ProjectsManager } from "./classes/ProjectsManager";
 import { TodoCreator } from "./bim-components/TodoCreator";
+import { SimpleQTO } from "./bim-components/SimpleQTO";
 
 const models: FragmentsGroup[] = [];
 
@@ -353,7 +354,8 @@ async function onModelLoaded(model: FragmentsGroup) {
       exportBtn.visible = true;
       toolbar.addChild(
         propertiesProcessor.uiElement.get("main"),
-        fragmentManager.uiElement.get("main")
+        fragmentManager.uiElement.get("main"),
+        simpleQTO.uiElement.get("activationBtn")
       );
     }
   } catch (error) {
@@ -409,6 +411,10 @@ const todoCreator = new TodoCreator(viewer);
 await todoCreator.setup();
 todoCreator.onProjectCreated.add((todo) => console.log(todo));
 
+const simpleQTO = new SimpleQTO(viewer);
+await simpleQTO.setup();
+// simpleQTO.onProjectCreated.add((todo) => console.log(todo));
+
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(
   ifcLoader.uiElement.get("main"),
@@ -416,7 +422,7 @@ toolbar.addChild(
   classificationBtn,
   shareBtn,
   exportBtn,
-  todoCreator.uiElement.get("activationButton")
+  todoCreator.uiElement.get("activationBtn")
 );
 
 viewer.ui.addToolbar(toolbar);

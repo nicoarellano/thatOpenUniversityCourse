@@ -4,20 +4,15 @@ export class SimpleQTO
   extends OBC.Component<null>
   implements OBC.UI, OBC.Disposable
 {
-  static uuid = "3e2f0577-c7f6-4280-922a-dad167a58c9e";
+  static uuid = "afaecc6f-d556-43e8-b818-c5e5bb510654";
   enabled = true;
   private _components: OBC.Components;
   uiElement = new OBC.UIElement<{
-    activationButton: OBC.Button;
-    toolWindow: OBC.FloatingWindow;
+    activationBtn: OBC.Button;
+    qtoList: OBC.FloatingWindow;
   }>();
 
   setup() {}
-
-  async dispose() {
-    this.uiElement.dispose();
-    this.enabled = false;
-  }
 
   constructor(components: OBC.Components) {
     super(components);
@@ -27,16 +22,26 @@ export class SimpleQTO
   }
 
   private setUI() {
-    const activationButton = new OBC.Button(this._components);
-    activationButton.materialIcon = "construction";
-    activationButton.tooltip = "QTO List";
+    const activationBtn = new OBC.Button(this._components);
+    activationBtn.materialIcon = "functions";
+    activationBtn.tooltip = "Quantification";
 
-    const toolWindow = new OBC.FloatingWindow(this._components);
-    this._components.ui.add(toolWindow);
-    toolWindow.visible = false;
-    toolWindow.title = "QTO List";
+    const qtoList = new OBC.FloatingWindow(this._components);
+    this._components.ui.add(qtoList);
+    qtoList.visible = false;
+    qtoList.title = "Quantification";
 
-    this.uiElement.set({ activationButton, toolWindow });
+    activationBtn.onClick.add(() => {
+      activationBtn.active = !activationBtn.active;
+      qtoList.visible = activationBtn.active;
+    });
+
+    this.uiElement.set({ activationBtn, qtoList });
+  }
+
+  async dispose() {
+    this.uiElement.dispose();
+    this.enabled = false;
   }
 
   get(): null {
