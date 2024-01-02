@@ -292,6 +292,18 @@ function exportFragments(model: FragmentsGroup) {
   a.download = `${model.name.replace(".ifc", "")}.frag`;
   a.click();
   URL.revokeObjectURL(url);
+
+  const properties = model.properties;
+
+  const propBlob = new Blob([JSON.stringify(properties)], {
+    type: "text/json",
+  });
+  const propUrl = URL.createObjectURL(propBlob);
+  const propA = document.createElement("a");
+  propA.href = propUrl;
+  propA.download = `${model.name.replace(".ifc", "")}.json`;
+  propA.click();
+  URL.revokeObjectURL(propUrl);
 }
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer);

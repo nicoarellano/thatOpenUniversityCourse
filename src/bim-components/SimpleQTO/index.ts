@@ -1,3 +1,4 @@
+import { FragmentsGroup } from "bim-fragment";
 import * as OBC from "openbim-components";
 
 export class SimpleQTO
@@ -12,7 +13,14 @@ export class SimpleQTO
     qtoList: OBC.FloatingWindow;
   }>();
 
-  setup() {}
+  async setup() {
+    const highlighter = await this._components.tools.get(
+      OBC.FragmentHighlighter
+    );
+    highlighter.events.select.onHighlight.add((fragmentIdMap) => {
+      this.sumQuantities(fragmentIdMap);
+    });
+  }
 
   constructor(components: OBC.Components) {
     super(components);
@@ -37,6 +45,19 @@ export class SimpleQTO
     });
 
     this.uiElement.set({ activationBtn, qtoList });
+  }
+
+  async sumQuantities(fragmentIdMap: OBC.FragmentIdMap) {
+    const fragmentManager = await this._components.tools.get(
+      OBC.FragmentManager
+    );
+    for (const fragmentId in fragmentIdMap) {
+      const fragment = fragmentManager.list[fragmentId];
+      const model = fragment.mesh.parent;
+      if (!(model instanceof FragmentsGroup)) continue;
+      const properties = model.properties;
+      console.log(properties);
+    }
   }
 
   async dispose() {
