@@ -353,8 +353,7 @@ async function onModelLoaded(model: FragmentsGroup) {
       exportBtn.visible = true;
       toolbar.addChild(
         propertiesProcessor.uiElement.get("main"),
-        fragmentManager.uiElement.get("main"),
-        todoCreator.uiElement.get("activationButton")
+        fragmentManager.uiElement.get("main")
       );
     }
   } catch (error) {
@@ -408,6 +407,7 @@ importFragmentBtn.onClick.add(() => {
 
 const todoCreator = new TodoCreator(viewer);
 await todoCreator.setup();
+todoCreator.onProjectCreated.add((todo) => console.log(todo));
 
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(
@@ -415,7 +415,8 @@ toolbar.addChild(
   importFragmentBtn,
   classificationBtn,
   shareBtn,
-  exportBtn
+  exportBtn,
+  todoCreator.uiElement.get("activationButton")
 );
 
 viewer.ui.addToolbar(toolbar);

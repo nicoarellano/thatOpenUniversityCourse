@@ -4,15 +4,19 @@ import { TodoCard } from "./src/TodoCard";
 
 type ToDoPriority = "Low" | "Normal" | "High";
 interface ToDo {
+  id: string;
   description: string;
   date: Date;
   fragmentMap: OBC.FragmentIdMap;
   camera: { position: THREE.Vector3; target: THREE.Vector3 };
   priority: ToDoPriority;
 }
-
-export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
+export class TodoCreator
+  extends OBC.Component<ToDo[]>
+  implements OBC.UI, OBC.Disposable
+{
   static uuid = "2953b248-5967-45d3-a692-6365b71d478c";
+  onProjectCreated = new OBC.Event<ToDo>();
   enabled = true;
   private _components: OBC.Components;
   private _list: ToDo[] = [];
@@ -27,6 +31,12 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     this._components = components;
     components.tools.add(TodoCreator.uuid, this);
     this.setUI();
+  }
+
+  async dispose() {
+    this.uiElement.dispose();
+    this._list = [];
+    this.enabled = false;
   }
 
   async setup() {
@@ -44,9 +54,16 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     ]);
   }
 
-  async addToDo(description: string, priority: ToDoPriority) {
-    const camera = this._components.camera;
+  deleteToDo(id: string) {
+    const newList = this._list.filter((todo) => todo.id !== id);
+    this._list = newList;
+    console.log(this._list);
+  }
 
+  async addToDo(description: string, priority: ToDoPriority) {
+    if (!this.enabled) return;
+
+    const camera = this._components.camera;
     if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
       throw new Error(
         "TodoCreator needs the OrthoPerspectiveCamera in order to work"
@@ -64,6 +81,7 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     );
 
     const todo: ToDo = {
+      id: crypto.randomUUID(),
       description,
       date: new Date(),
       fragmentMap: highlighter.selection.select,
@@ -92,8 +110,13 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     });
     const todoList = this.uiElement.get("todoList");
     todoList.addChild(todoCard);
+    this.onProjectCreated.trigger(todo);
 
-    console.log(todo);
+    todoCard.onDeleteClick.add(() => {
+      todoCard.dispose();
+      const newTodoList = this._list.filter((item) => item.id !== todo.id);
+      this._list = newTodoList;
+    });
   }
 
   private async setUI() {
@@ -121,7 +144,7 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
     descriptionForm.style.flexDirection = "column";
     descriptionForm.style.rowGap = "20px";
 
-    form.onAccept.add(() => {
+    const acceptTodo = () => {
       this.addToDo(
         descriptionInput.value,
         priorityDropdown.value as ToDoPriority
@@ -129,6 +152,16 @@ export class TodoCreator extends OBC.Component<ToDo[]> implements OBC.UI {
       descriptionInput.value = "";
       priorityDropdown.value = "Normal";
       form.visible = false;
+    };
+
+    form.onAccept.add(() => {
+      acceptTodo();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.ctrlKey && e.code === "Enter" && form.visible) {
+        acceptTodo();
+      }
     });
 
     const newTodoBtn = new OBC.Button(this._components, {
