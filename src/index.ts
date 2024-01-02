@@ -12,6 +12,9 @@ import GUI from "three/examples/jsm/libs/lil-gui.module.min";
 
 import { IProject, UserRole, ProjectStatus } from "./classes/Project";
 import { ProjectsManager } from "./classes/ProjectsManager";
+import { TodoCreator } from "./bim-components/TodoCreator";
+
+const models: FragmentsGroup[] = [];
 
 let modalOpen = false;
 const toggleModal = (id: string) => {
@@ -247,6 +250,7 @@ classificationWindow.visible = false;
 const classificationBtn = new OBC.Button(viewer);
 classificationBtn.materialIcon = "account_tree";
 classificationBtn.tooltip = "Model tree";
+classificationBtn.visible = false;
 
 classificationBtn.onClick.add(() => {
   classificationWindow.visible = !classificationWindow.visible;
@@ -256,9 +260,23 @@ classificationBtn.onClick.add(() => {
 const shareBtn = new OBC.Button(viewer);
 shareBtn.materialIcon = "share";
 shareBtn.tooltip = "Share view";
+shareBtn.visible = false;
 
 shareBtn.onClick.add(() => {
-  alert("View shared!");
+  if (!(cameraComponent instanceof OBC.OrthoPerspectiveCamera)) {
+    throw new Error(
+      "Share Camera needs the OrthoPerspectiveCamera in order to work"
+    );
+  }
+
+  const position = new THREE.Vector3();
+  cameraComponent.controls.getPosition(position);
+  const target = new THREE.Vector3();
+  cameraComponent.controls.getTarget(target);
+  const shareCamera = { position, target };
+
+  JSON.stringify(shareCamera);
+  alert("View shared!" + JSON.stringify(shareCamera));
 });
 
 const fragmentManager = new OBC.FragmentManager(viewer);
@@ -326,6 +344,19 @@ async function onModelLoaded(model: FragmentsGroup) {
       const expressID = [...Object.values(fragmentMap)[0]][0];
       propertiesProcessor.renderProperties(model, Number(expressID));
     });
+    models.push(model);
+
+    const modelsLength = models.length;
+    if (modelsLength > 0) {
+      classificationBtn.visible = true;
+      shareBtn.visible = true;
+      exportBtn.visible = true;
+      toolbar.addChild(
+        propertiesProcessor.uiElement.get("main"),
+        fragmentManager.uiElement.get("main"),
+        todoCreator.uiElement.get("activationButton")
+      );
+    }
   } catch (error) {
     alert(error);
   }
@@ -334,13 +365,14 @@ async function onModelLoaded(model: FragmentsGroup) {
 const exportBtn = new OBC.Button(viewer);
 exportBtn.materialIcon = "download";
 exportBtn.tooltip = "Export Fragment";
+exportBtn.visible = false;
 
 ifcLoader.onIfcLoaded.add(async (model) => {
   onModelLoaded(model);
 
   exportBtn.onClick.add(() => {
     if (!model) {
-      alert("No model to download");
+      throw new Error("No model to download");
       return;
     }
     exportFragments(model);
@@ -374,15 +406,15 @@ importFragmentBtn.onClick.add(() => {
   input.click();
 });
 
+const todoCreator = new TodoCreator(viewer);
+
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(
   ifcLoader.uiElement.get("main"),
   importFragmentBtn,
   classificationBtn,
   shareBtn,
-  exportBtn,
-  propertiesProcessor.uiElement.get("main"),
-  fragmentManager.uiElement.get("main")
+  exportBtn
 );
 
 viewer.ui.addToolbar(toolbar);
