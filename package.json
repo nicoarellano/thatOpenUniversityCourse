@@ -17,6 +17,7 @@
   "dependencies": {
     "bim-fragment": "1.0.22",
     "openbim-components": "1.1.5",
-    "three": "0.152.2"
+    "three": "0.152.2",
+    "web-ifc": "0.0.44"
   }
 }

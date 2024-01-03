@@ -1,13 +1,24 @@
-import { FragmentsGroup } from "bim-fragment";
 import * as OBC from "openbim-components";
+import * as WEBIFC from "web-ifc";
+import { FragmentsGroup } from "bim-fragment";
+
+type QtoResult = { [setName: string]: { [qtoName: string]: number } };
+
+// const sum = {
+//   Qto_WallBaseQuantities: {
+//     volume: 20,
+//     area: 30,
+//   },
+// };
 
 export class SimpleQTO
-  extends OBC.Component<null>
+  extends OBC.Component<QtoResult>
   implements OBC.UI, OBC.Disposable
 {
   static uuid = "afaecc6f-d556-43e8-b818-c5e5bb510654";
   enabled = true;
   private _components: OBC.Components;
+  private _qtoResult: QtoResult = {};
   uiElement = new OBC.UIElement<{
     activationBtn: OBC.Button;
     qtoList: OBC.FloatingWindow;
@@ -20,6 +31,13 @@ export class SimpleQTO
     highlighter.events.select.onHighlight.add((fragmentIdMap) => {
       this.sumQuantities(fragmentIdMap);
     });
+    highlighter.events.select.onClear.add(() => {
+      this.resetQuantities();
+    });
+  }
+
+  resetQuantities() {
+    this._qtoResult = {};
   }
 
   constructor(components: OBC.Components) {
@@ -51,21 +69,60 @@ export class SimpleQTO
     const fragmentManager = await this._components.tools.get(
       OBC.FragmentManager
     );
-    for (const fragmentId in fragmentIdMap) {
-      const fragment = fragmentManager.list[fragmentId];
+    const propertiesProcessor = await this._components.tools.get(
+      OBC.IfcPropertiesProcessor
+    );
+    for (const fragmentID in fragmentIdMap) {
+      const fragment = fragmentManager.list[fragmentID];
       const model = fragment.mesh.parent;
-      if (!(model instanceof FragmentsGroup)) continue;
+      if (!(model instanceof FragmentsGroup && model.properties)) continue;
       const properties = model.properties;
-      console.log(properties);
+      const modelIndexMap = propertiesProcessor.get()[model.uuid];
+      if (!modelIndexMap) continue;
+      const expressIDs = fragmentIdMap[fragmentID];
+      for (const expressID of expressIDs) {
+        const entityMap = modelIndexMap[Number(expressID)];
+        if (!entityMap) continue;
+        for (const mapID of entityMap) {
+          const entity = properties[mapID];
+          const { name: setName } = OBC.IfcPropertiesUtils.getEntityName(
+            properties,
+            mapID
+          );
+          if (entity.type !== WEBIFC.IFCELEMENTQUANTITY || !setName) continue;
+          if (!(setName in this._qtoResult)) {
+            this._qtoResult[setName] = {};
+            OBC.IfcPropertiesUtils.getQsetQuantities(
+              properties,
+              mapID,
+              (qtoID) => {
+                const { name: qtoName } = OBC.IfcPropertiesUtils.getEntityName(
+                  properties,
+                  qtoID
+                );
+                const { value } = OBC.IfcPropertiesUtils.getQuantityValue(
+                  properties,
+                  qtoID
+                );
+                if (!(qtoName && value)) return;
+                if (!(qtoName in this._qtoResult[setName]))
+                  this._qtoResult[setName][qtoName] += value;
+              }
+            );
+          }
+        }
+      }
+      console.log(this._qtoResult);
     }
   }
 
   async dispose() {
     this.uiElement.dispose();
     this.enabled = false;
+    this.resetQuantities();
   }
 
-  get(): null {
-    return null;
+  get(): QtoResult {
+    return this._qtoResult;
   }
 }

@@ -293,6 +293,7 @@ function exportFragments(model: FragmentsGroup) {
   a.click();
   URL.revokeObjectURL(url);
 
+  if (!model.properties) return;
   const properties = model.properties;
 
   const propBlob = new Blob([JSON.stringify(properties)], {
@@ -308,7 +309,7 @@ function exportFragments(model: FragmentsGroup) {
 
 const ifcLoader = new OBC.FragmentIfcLoader(viewer);
 ifcLoader.settings.wasm = {
-  path: "https://unpkg.com/web-ifc@0.0.43/",
+  path: "https://unpkg.com/web-ifc@0.0.44/",
   absolute: true,
 };
 
@@ -366,6 +367,7 @@ async function onModelLoaded(model: FragmentsGroup) {
       exportBtn.visible = true;
       toolbar.addChild(
         propertiesProcessor.uiElement.get("main"),
+        propsFinder.uiElement.get("main"),
         fragmentManager.uiElement.get("main"),
         simpleQTO.uiElement.get("activationBtn")
       );
@@ -386,7 +388,6 @@ ifcLoader.onIfcLoaded.add(async (model) => {
   exportBtn.onClick.add(() => {
     if (!model) {
       throw new Error("No model to download");
-      return;
     }
     exportFragments(model);
   });
@@ -425,7 +426,9 @@ todoCreator.onProjectCreated.add((todo) => console.log(todo));
 
 const simpleQTO = new SimpleQTO(viewer);
 await simpleQTO.setup();
-// simpleQTO.onProjectCreated.add((todo) => console.log(todo));
+
+const propsFinder = new OBC.IfcPropertiesFinder(viewer);
+await propsFinder.init();
 
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(
