@@ -19,6 +19,8 @@ import { TodoCreator } from "./bim-components/TodoCreator";
 import { SimpleQTO } from "./bim-components/SimpleQTO";
 import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage";
 
+const projectsManager = new ProjectsManager();
+
 const rootElement = document.getElementById("app") as HTMLDivElement;
 const appRoot = ReactDOM.createRoot(rootElement);
 appRoot.render(
@@ -26,35 +28,21 @@ appRoot.render(
     <Router.BrowserRouter>
       <Sidebar />
       <Router.Routes>
-        <Router.Route path="/" element={<ProjectsPage />}></Router.Route>
+        <Router.Route
+          path="/"
+          element={<ProjectsPage projectsManager={projectsManager} />}
+        ></Router.Route>
         <Router.Route
           path="/project"
-          element={<ProjectDetailsPage />}
+          element={<ProjectDetailsPage projectsManager={projectsManager} />}
         ></Router.Route>
       </Router.Routes>
     </Router.BrowserRouter>
   </>
 );
 
-const models: FragmentsGroup[] = [];
-
-const createCode = (name: string) => {
-  const splittedName = name.split(" ");
-  let code = "??";
-
-  if (name)
-    code =
-      splittedName[0][0].toUpperCase() +
-      (splittedName[1] && splittedName[1][0]
-        ? splittedName[1] && splittedName[1][0].toUpperCase()
-        : splittedName[0][1]
-        ? splittedName[0][1]
-        : " ");
-
-  return code;
-};
-
 // OpenBIM Components Viewer 👀
+// const models: FragmentsGroup[] = [];
 /*const viewer = new OBC.Components();
 const sceneComponent = new OBC.SimpleScene(viewer);
 

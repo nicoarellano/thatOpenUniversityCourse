@@ -1,28 +1,34 @@
 import * as React from "react";
+import * as Router from "react-router-dom";
 
 import { IProject, UserRole, ProjectStatus, Project } from "../classes/Project";
-import { ProjectsManager } from "../classes/ProjectsManager";
 import { ProjectCard } from "./ProjectCard";
+import { ProjectsManager } from "../classes/ProjectsManager";
 
-export function ProjectsPage() {
-  const [projectsManager] = React.useState(new ProjectsManager());
+interface Props {
+  projectsManager: ProjectsManager;
+}
+
+export function ProjectsPage(props: Props) {
   const [projects, setProjects] = React.useState<Project[]>(
-    projectsManager.list
+    props.projectsManager.list
   );
 
   const projectCards = projects.map((project) => (
-    <ProjectCard key={project.id} project={project} />
+    <Router.Link to={`/project?id=${project.id}`} key={project.id}>
+      <ProjectCard project={project} />
+    </Router.Link>
   ));
 
   React.useEffect(() => {
     console.log("Projects state updated: ", projects);
   }, [projects]);
 
-  projectsManager.onProjectCreated = () => {
-    setProjects([...projectsManager.list]);
+  props.projectsManager.onProjectCreated = () => {
+    setProjects([...props.projectsManager.list]);
   };
-  projectsManager.onProjectDeleted = () => {
-    setProjects([...projectsManager.list]);
+  props.projectsManager.onProjectDeleted = () => {
+    setProjects([...props.projectsManager.list]);
   };
 
   const tipStyle: React.CSSProperties = {
@@ -74,9 +80,9 @@ export function ProjectsPage() {
         "#" + (((1 << 24) * Math.random()) | 0).toString(16).padStart(6, "0"),
     };
     try {
-      const project = projectsManager.newProject(projectData);
+      const project = props.projectsManager.newProject(projectData);
 
-      projectsManager.calculateTotalCost();
+      props.projectsManager.calculateTotalCost();
       projectForm.reset();
       cancelModal();
     } catch (err) {
@@ -99,11 +105,11 @@ export function ProjectsPage() {
 
   // ⬇️ Export projects to JSON
   const onExportProjectClick = () => {
-    projectsManager.exportToJSON("projects");
+    props.projectsManager.exportToJSON("projects");
   };
   // ⬇️ Import projects from JSON
   const onImportProjectClick = () => {
-    projectsManager.importFromJSON();
+    props.projectsManager.importFromJSON();
   };
 
   return (

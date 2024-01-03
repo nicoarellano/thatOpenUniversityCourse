@@ -16,7 +16,7 @@ export class ProjectsManager {
       userRole: "undefined",
       finishDate: new Date(),
       color: "#6b8ec6",
-      progress: 0,
+      progress: 66,
       cost: 0,
     });
   }

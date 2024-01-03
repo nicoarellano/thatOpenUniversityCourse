@@ -1,16 +1,37 @@
 import * as React from "react";
+import * as Router from "react-router-dom";
 
-export function ProjectDetailsPage() {
+import { Project } from "../classes/Project";
+import { ProjectsManager } from "../classes/ProjectsManager";
+import hexColorRange from "../utils/hexColorRange";
+
+interface Props {
+  projectsManager: ProjectsManager;
+}
+
+export function ProjectDetailsPage(props: Props) {
+  const [searchParams] = Router.useSearchParams();
+  const id = searchParams.get("id");
+
+  React.useEffect(() => {
+    console.log(id, props.projectsManager.list);
+    const project = props.projectsManager.getProject(id as string);
+    if (!(project && project instanceof Project)) return;
+    console.log(project);
+    setProject(project);
+  }, [id]);
+
+  const [project, setProject] = React.useState<Project>(
+    props.projectsManager.list[0]
+  );
+
   return (
     <section className="page" id="project-details">
       <header>
         <div>
-          <h2 data-project-info="name">Hospital Center</h2>
-          <p
-            data-project-info="description"
-            style={{ color: "var(--background-300)" }}
-          >
-            Community hospital located at downtown
+          <h2>{project.name}</h2>
+          <p style={{ color: "var(--background-300)" }}>
+            {project.description}
           </p>
         </div>
       </header>
@@ -29,19 +50,18 @@ export function ProjectDetailsPage() {
               }}
             >
               <p
-                data-project-info="code"
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 20,
-                  backgroundColor: "#ca8134",
+                  backgroundColor: project.color,
                   aspectRatio: 1,
                   borderRadius: "100%",
                   padding: 12,
                 }}
               >
-                HC
+                {project.code}
               </p>
               <button className="btn-secondary">
                 <p style={{ width: "100%" }}>Edit</p>
@@ -49,15 +69,14 @@ export function ProjectDetailsPage() {
             </div>
             <div style={{ padding: "0 2rem" }}>
               <div>
-                <h5 data-project-info="cardName">Hospital Center</h5>
+                <h5>{project.name}</h5>
                 <p
-                  data-project-info="cardDescription"
                   style={{
                     color: "var(--background-300)",
                     fontSize: "var(--font-base)",
                   }}
                 >
-                  Community hospital located at downtown
+                  {project.description}
                 </p>
               </div>
               <div
@@ -77,7 +96,7 @@ export function ProjectDetailsPage() {
                   >
                     Status
                   </p>
-                  <p data-project-info="status">Active</p>
+                  <p>{project.status}</p>
                 </div>
                 <div>
                   <p
@@ -88,7 +107,7 @@ export function ProjectDetailsPage() {
                   >
                     Cost
                   </p>
-                  <p data-project-info="cost">$ 2.542.000</p>
+                  <p>$ {project.cost}</p>
                 </div>
                 <div>
                   <p
@@ -99,7 +118,7 @@ export function ProjectDetailsPage() {
                   >
                     Role
                   </p>
-                  <p data-project-info="userRole">Engineer</p>
+                  <p>{project.userRole}</p>
                 </div>
                 <div>
                   <p
@@ -110,7 +129,7 @@ export function ProjectDetailsPage() {
                   >
                     Finish Date
                   </p>
-                  <p data-project-info="finishDate">2023-05-01</p>
+                  <p>{project.finishDate.toDateString()}</p>
                 </div>
               </div>
               <div
@@ -121,15 +140,14 @@ export function ProjectDetailsPage() {
                 }}
               >
                 <div
-                  data-project-info="progress"
                   style={{
-                    width: "80%",
-                    backgroundColor: "green",
+                    width: `${project.progress}%`,
+                    backgroundColor: hexColorRange(project.progress),
                     padding: "4px 0",
                     textAlign: "center",
                   }}
                 >
-                  80%
+                  {project.progress}%
                 </div>
               </div>
             </div>
