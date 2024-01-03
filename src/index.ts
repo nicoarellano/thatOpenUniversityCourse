@@ -429,6 +429,9 @@ await simpleQTO.setup();
 
 const propsFinder = new OBC.IfcPropertiesFinder(viewer);
 await propsFinder.init();
+propsFinder.onFound.add((fragmentIDMap) => {
+  highlighter.highlightByID("select", fragmentIDMap);
+});
 
 const toolbar = new OBC.Toolbar(viewer);
 toolbar.addChild(
