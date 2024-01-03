@@ -10,6 +10,10 @@ export function ProjectsPage() {
     projectsManager.list
   );
 
+  const projectCards = projects.map((project) => (
+    <ProjectCard key={project.id} project={project} />
+  ));
+
   React.useEffect(() => {
     console.log("Projects state updated: ", projects);
   }, [projects]);
@@ -24,6 +28,7 @@ export function ProjectsPage() {
   const tipStyle: React.CSSProperties = {
     color: "var(--background-300)",
     marginTop: "5px",
+    fontSize: "var(--font-sm)",
   };
 
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -73,12 +78,23 @@ export function ProjectsPage() {
 
       projectsManager.calculateTotalCost();
       projectForm.reset();
-      const modal = document.getElementById("new-project-modal");
-      if (!(modal && modal instanceof HTMLDialogElement)) return;
-      modal.close();
+      cancelModal();
     } catch (err) {
       alert(err);
     }
+  };
+
+  const onCancelProjectModalClick = () => cancelModal();
+  const onCloseProjectModalClick = () => cancelModal();
+
+  const cancelModal = () => {
+    const projectForm = document.getElementById("new-project-form");
+    if (!(projectForm && projectForm instanceof HTMLFormElement)) return;
+    projectForm.reset();
+
+    const modal = document.getElementById("new-project-modal");
+    if (!(modal && modal instanceof HTMLDialogElement)) return;
+    modal.close();
   };
 
   // ⬇️ Export projects to JSON
@@ -97,7 +113,7 @@ export function ProjectsPage() {
           <div id="form-header">
             <h2>New Project</h2>
             <span
-              id="close-new-project-modal"
+              onClick={onCloseProjectModalClick}
               className="material-symbols-rounded icon"
               title="Close"
             >
@@ -120,8 +136,8 @@ export function ProjectsPage() {
               />
               <h6 style={tipStyle}>
                 <i>
-                  TIP: Give it a short name, not shorter than 5 characters or
-                  longer than 20
+                  Give it a short name, not shorter than 5 characters or longer
+                  than 20
                 </i>
               </h6>
             </div>
@@ -133,7 +149,7 @@ export function ProjectsPage() {
               <textarea
                 name="description"
                 cols={30}
-                rows={5}
+                rows={1}
                 placeholder="Give your project description"
               ></textarea>
             </div>
@@ -145,8 +161,8 @@ export function ProjectsPage() {
                 </span>
                 Role
               </label>
-              <select name="userRole">
-                <option value="" selected disabled hidden>
+              <select name="userRole" defaultValue="select">
+                <option hidden value="select">
                   Select user role
                 </option>
                 <option>Architect</option>
@@ -159,8 +175,8 @@ export function ProjectsPage() {
                 <span className="material-symbols-rounded"> check_box </span>
                 Status
               </label>
-              <select name="status">
-                <option value="" selected disabled hidden>
+              <select defaultValue="select" name="status">
+                <option hidden value="select">
                   Select status
                 </option>
                 <option>Pending</option>
@@ -180,10 +196,7 @@ export function ProjectsPage() {
             </div>
             <div className="form-field-container">
               <label>
-                <span className="material-symbols-rounded">
-                  {" "}
-                  calendar_clock{" "}
-                </span>
+                <span className="material-symbols-rounded">calendar_clock</span>
                 Finish Date
               </label>
               <input name="finish-date" type="date" title="Finish Date" />
@@ -193,6 +206,7 @@ export function ProjectsPage() {
             <button
               type="button"
               className="btn-secondary"
+              onClick={onCancelProjectModalClick}
               id="cancel-new-project-modal"
             >
               Cancel
@@ -233,22 +247,7 @@ export function ProjectsPage() {
           </button>
         </div>
       </header>
-      <section id="projects-list">
-        {projectsManager.list.map((project, index) => (
-          <ProjectCard
-            key={index}
-            id={project.id}
-            code={project.code}
-            name={project.name}
-            description={project.description}
-            userRole={project.userRole}
-            status={project.status}
-            progress={project.progress}
-            cost={project.cost}
-            color={project.color}
-          />
-        ))}
-      </section>
+      <section id="projects-list">{projectCards}</section>
     </section>
   );
 }

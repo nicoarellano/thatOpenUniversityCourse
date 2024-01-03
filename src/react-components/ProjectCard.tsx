@@ -1,19 +1,31 @@
 import * as React from "react";
-import { IProject } from "../classes/Project";
+import { Project } from "../classes/Project";
 import { ProjectsManager } from "../classes/ProjectsManager";
 
-export function ProjectCard({
-  id,
-  code,
-  name,
-  description,
-  userRole,
-  status,
-  cost,
-  progress,
-  color,
-}): React.ReactElement<IProject> {
+interface Props {
+  project: Project;
+}
+
+export function ProjectCard(props: Props): React.ReactElement<Props> {
   const [projectsManager] = React.useState(new ProjectsManager());
+
+  const onDeleteProjectClick = () => {
+    console.log(projectsManager.list);
+    projectsManager.deleteProject(id);
+  };
+
+  const {
+    id,
+    code,
+    name,
+    description,
+    userRole,
+    status,
+    cost,
+    progress,
+    color,
+  } = props.project;
+
   return (
     <div className="project-card">
       <div
@@ -49,7 +61,7 @@ export function ProjectCard({
             <p>{description}</p>
           </div>
         </div>
-        <div onClick={() => projectsManager.deleteProject(id)} className="icon">
+        <div onClick={onDeleteProjectClick} className="icon">
           <span title="Delete project" className="material-symbols-rounded">
             delete
           </span>

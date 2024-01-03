@@ -1,6 +1,9 @@
 // Import React
-import * as react from "react";
+import * as React from "react";
 import * as ReactDOM from "react-dom/client";
+import * as Router from "react-router-dom";
+
+// Import Components
 import { Sidebar } from "./react-components/Sidebar";
 import { ProjectsPage } from "./react-components/ProjectsPage";
 
@@ -14,13 +17,22 @@ import * as THREE from "three";
 import { ProjectsManager } from "./classes/ProjectsManager";
 import { TodoCreator } from "./bim-components/TodoCreator";
 import { SimpleQTO } from "./bim-components/SimpleQTO";
+import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage";
 
 const rootElement = document.getElementById("app") as HTMLDivElement;
 const appRoot = ReactDOM.createRoot(rootElement);
 appRoot.render(
   <>
-    <Sidebar />
-    <ProjectsPage />
+    <Router.BrowserRouter>
+      <Sidebar />
+      <Router.Routes>
+        <Router.Route path="/" element={<ProjectsPage />}></Router.Route>
+        <Router.Route
+          path="/project"
+          element={<ProjectDetailsPage />}
+        ></Router.Route>
+      </Router.Routes>
+    </Router.BrowserRouter>
   </>
 );
 
@@ -42,22 +54,8 @@ const createCode = (name: string) => {
   return code;
 };
 
-// Go to projects page
-
-const projectsPageButton = document.getElementById(
-  "projects-page-button"
-) as HTMLElement;
-
-projectsPageButton.addEventListener("click", () => {
-  const projectsPage = document.getElementById("projects-page");
-  const detailsPage = document.getElementById("project-details");
-
-  if (!projectsPage || !detailsPage) return;
-  projectsPage.style.display = "flex";
-  detailsPage.style.display = "none";
-});
-
-const viewer = new OBC.Components();
+// OpenBIM Components Viewer 👀
+/*const viewer = new OBC.Components();
 const sceneComponent = new OBC.SimpleScene(viewer);
 
 viewer.scene = sceneComponent;
@@ -286,4 +284,4 @@ toolbar.addChild(
   todoCreator.uiElement.get("activationBtn")
 );
 
-viewer.ui.addToolbar(toolbar);
+viewer.ui.addToolbar(toolbar);*/
