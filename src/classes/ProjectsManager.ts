@@ -2,11 +2,11 @@ import { IProject, Project } from "./Project";
 
 export class ProjectsManager {
   list: Project[] = [];
-  ui: HTMLDivElement;
+  onProjectCreated = (project: Project) => {};
+  onProjectDeleted = () => {};
   totalCost: number;
 
-  constructor(container: HTMLDivElement) {
-    this.ui = container;
+  constructor() {
     const project = this.newProject({
       id: crypto.randomUUID(),
       name: "Default Project",
@@ -19,7 +19,6 @@ export class ProjectsManager {
       progress: 0,
       cost: 0,
     });
-    project.ui.click();
   }
 
   newProject(data: IProject) {
@@ -32,18 +31,7 @@ export class ProjectsManager {
     }
 
     const project = new Project(data);
-    this.ui.append(project.ui);
     this.list.push(project);
-
-    project.ui.addEventListener("click", () => {
-      const projectsPage = document.getElementById("projects-page");
-      const detailsPage = document.getElementById("project-details");
-
-      if (!projectsPage || !detailsPage) return;
-      projectsPage.style.display = "none";
-      detailsPage.style.display = "flex";
-      this.setDetailsPage(project);
-    });
 
     const closeBtn = document.getElementById(`delete-project-${data.id}`);
     if (closeBtn)
@@ -51,6 +39,7 @@ export class ProjectsManager {
         this.deleteProject(data.id);
         e.stopPropagation(); // prevent parent's onclick even from firing https://stackoverflow.com/questions/1369035/how-do-i-prevent-a-parents-onclick-event-from-firing-when-a-child-anchor-is-cli
       });
+    this.onProjectCreated(project);
     return project;
   }
 
@@ -120,12 +109,12 @@ export class ProjectsManager {
   deleteProject(id: string) {
     const project = this.getProject(id);
     if (!project) return;
-    project.ui.remove();
 
     const remaining = this.list.filter((project) => {
       return project.id !== id;
     });
     this.list = remaining;
+    this.onProjectDeleted();
   }
 
   calculateTotalCost() {

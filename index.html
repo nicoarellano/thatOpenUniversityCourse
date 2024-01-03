@@ -21,146 +21,8 @@
     <link rel="icon" type="image/x-icon" href="/assets/cdt-favicon.ico" />
   </head>
   <body>
-    <aside id="sidebar">
-      <img id="logo" src="./assets/cdt-logo.png" alt="CDT" />
-      <ul id="nav-buttons">
-        <li id="home-btn" title="Go to the Home page">
-          <span class="material-symbols-rounded"> home </span>Home
-        </li>
-        <li id="projects-page-button" title="Go to the Projects page">
-          <span class="material-symbols-rounded"> apartment </span>Projects
-        </li>
-        <li id="users-page-button" title="Go to the Users page">
-          <span class="material-symbols-rounded"> group </span>Users
-        </li>
-      </ul>
-    </aside>
+    <div id="app"></div>
     <main id="content">
-      <section class="page" id="projects-page" style="display: flex">
-        <dialog id="new-project-modal">
-          <form id="new-project-form">
-            <div id="form-header">
-              <h2>New Project</h2>
-              <span
-                id="close-new-project-modal"
-                class="material-symbols-rounded icon"
-                title="Close"
-              >
-                close
-              </span>
-            </div>
-            <div class="input-list">
-              <div class="form-field-container">
-                <label>
-                  <span class="material-symbols-rounded"> apartment </span
-                  >Name</label
-                >
-                <input
-                  name="name"
-                  required
-                  minlength="5"
-                  maxlength="20"
-                  type="text"
-                  placeholder="What is the name of your project?"
-                />
-                <h6 style="color: var(--background-300); margin-top: 5px">
-                  <i
-                    >TIP: Give it a short name, not shorter than 5 characters or
-                    longer than 20</i
-                  >
-                </h6>
-              </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-symbols-rounded"> subject </span
-                  >Description</label
-                >
-                <textarea
-                  name="description"
-                  cols="30"
-                  rows="5"
-                  placeholder="Give your project description"
-                ></textarea>
-              </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-symbols-rounded"> account_circle </span
-                  >Role</label
-                >
-                <select name="userRole">
-                  <option value="" selected disabled hidden>
-                    Select user role
-                  </option>
-                  <option>Architect</option>
-                  <option>Engineer</option>
-                  <option>Developer</option>
-                </select>
-              </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-symbols-rounded"> check_box </span
-                  >Status</label
-                >
-                <select name="status">
-                  <option value="" selected disabled hidden>
-                    Select status
-                  </option>
-                  <option>Pending</option>
-                  <option>Active</option>
-                  <option>Finished</option>
-                </select>
-              </div>
-              <div class="form-field-container">
-                <label>
-                  <span class="material-symbols-rounded"> monetization_on </span
-                  >Cost</label
-                >
-                <input name="cost" type="number" />
-              </div>
-              <div class="form-field-container">
-                <label
-                  ><span class="material-symbols-rounded"> calendar_clock </span
-                  >Finish Date</label
-                >
-                <input name="finish-date" type="date" name="Finish Date" />
-              </div>
-            </div>
-            <div id="form-action">
-              <button
-                type="button"
-                class="btn-secondary"
-                id="cancel-new-project-modal"
-              >
-                Cancel
-              </button>
-              <button type="submit" class="button">Accept</button>
-            </div>
-          </form>
-        </dialog>
-        <header>
-          <h1>Project</h1>
-          <div style="display: flex; align-items: center; column-gap: 1rem">
-            <span
-              id="import-project-btn"
-              title="Import projects"
-              class="material-symbols-rounded icon"
-            >
-              upload
-            </span>
-            <span
-              id="export-project-btn"
-              title="Export projects"
-              class="material-symbols-rounded icon"
-            >
-              download
-            </span>
-            <button class="button" id="new-project-button">
-              <span class="material-symbols-rounded"> add </span>New Project
-            </button>
-          </div>
-        </header>
-        <section id="projects-list"></section>
-      </section>
       <section class="page" id="project-details" style="display: none">
         <header>
           <div>
@@ -375,6 +237,6 @@
         </div>
       </section>
     </main>
-    <script type="module" src="./src/index.ts"></script>
+    <script type="module" src="./src/index.tsx"></script>
   </body>
 </html>
