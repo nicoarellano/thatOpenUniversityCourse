@@ -25,10 +25,6 @@ export function ProjectsPage(props: Props) {
     </Router.Link>
   ));
 
-  React.useEffect(() => {
-    console.log("Projects state updated: ", projects);
-  }, [projects]);
-
   projectsManager.onProjectCreated = () => {
     setProjects([...projectsManager.list]);
   };
