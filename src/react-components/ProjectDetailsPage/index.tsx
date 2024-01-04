@@ -5,7 +5,7 @@ import { ProjectsManager } from "../../classes/ProjectsManager";
 import { ProjectHeader } from "./ProjectHeader";
 import { ProjectInformation } from "./ProjectInformation";
 import { ProjectTodos } from "./ProjectTodos";
-import { ProjectViewer } from "./ProjectViewer";
+import { IFCViewer } from "./IFCViewer";
 import { WarningMessage } from "../../utils/WarningMessage";
 
 interface Props {
@@ -45,7 +45,7 @@ export function ProjectDetailsPage(props: Props) {
             />
             <ProjectTodos project={project} />
           </div>
-          <ProjectViewer project={project} />
+          <IFCViewer />
         </div>
       </section>
     </>

@@ -1,7 +1,16 @@
 import * as React from "react";
 import * as Router from "react-router-dom";
+import { ViewerContext } from "./ProjectDetailsPage/IFCViewer";
+import { TodoCreator } from "../bim-components/TodoCreator";
 
 export function Sidebar() {
+  const { viewer } = React.useContext(ViewerContext);
+  const createTodo = async () => {
+    if (!viewer) return;
+    const todoCreator = await viewer.tools.get(TodoCreator);
+    todoCreator.addToDo("My custom todo", "High");
+  };
+
   return (
     <aside id="sidebar">
       <img id="logo" src="../../assets/cdt-logo.png" alt="CDT" />
@@ -22,6 +31,9 @@ export function Sidebar() {
             <span className="material-symbols-rounded"> group </span>Users
           </li>
         </Router.Link>
+        <li title="Create Todo" onClick={createTodo}>
+          <span className="material-symbols-rounded">construction</span>To-Do
+        </li>
       </ul>
     </aside>
   );

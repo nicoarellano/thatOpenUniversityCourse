@@ -112,7 +112,7 @@ export class SimpleQTO
           }
         }
       }
-      console.log(this._qtoResult);
+      if (this._qtoResult) console.log(this._qtoResult);
     }
   }
 

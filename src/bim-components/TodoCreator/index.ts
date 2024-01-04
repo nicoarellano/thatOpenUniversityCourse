@@ -1,9 +1,10 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { TodoCard } from "./src/TodoCard";
+import todoPriorityColor from "../../utils/todoPriorityColor";
 
-type ToDoPriority = "Low" | "Normal" | "High";
-interface ToDo {
+export type ToDoPriority = "Low" | "Normal" | "High";
+export interface ToDo {
   id: string;
   description: string;
   date: Date;
@@ -19,7 +20,7 @@ export class TodoCreator
   onProjectCreated = new OBC.Event<ToDo>();
   enabled = true;
   private _components: OBC.Components;
-  private _list: ToDo[] = [];
+  list: ToDo[] = [];
 
   uiElement = new OBC.UIElement<{
     activationBtn: OBC.Button;
@@ -38,20 +39,25 @@ export class TodoCreator
       OBC.FragmentHighlighter
     );
     highlighter.add(`${TodoCreator.uuid}-priority-Low`, [
-      new THREE.MeshStandardMaterial({ color: 0x59bc59 }),
+      new THREE.MeshStandardMaterial({
+        color: Number(`0x${todoPriorityColor("Low")}`),
+      }),
     ]);
     highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [
-      new THREE.MeshStandardMaterial({ color: 0x597cff }),
+      new THREE.MeshStandardMaterial({
+        color: Number(`0x${todoPriorityColor("Normal")}`),
+      }),
     ]);
     highlighter.add(`${TodoCreator.uuid}-priority-High`, [
-      new THREE.MeshStandardMaterial({ color: 0xff7676 }),
+      new THREE.MeshStandardMaterial({
+        color: Number(`0x${todoPriorityColor("High")}`),
+      }),
     ]);
   }
 
   deleteToDo(id: string) {
-    const newList = this._list.filter((todo) => todo.id !== id);
-    this._list = newList;
-    console.log(this._list);
+    const newList = this.list.filter((todo) => todo.id !== id);
+    this.list = newList;
   }
 
   async addToDo(description: string, priority: ToDoPriority) {
@@ -83,7 +89,7 @@ export class TodoCreator
       priority,
     };
 
-    this._list.push(todo);
+    this.list.push(todo);
 
     const todoCard = new TodoCard(this._components);
     todoCard.description = todo.description;
@@ -108,8 +114,9 @@ export class TodoCreator
 
     todoCard.onDeleteClick.add(() => {
       todoCard.dispose();
-      const newTodoList = this._list.filter((item) => item.id !== todo.id);
-      this._list = newTodoList;
+      const newTodoList = this.list.filter((item) => item.id !== todo.id);
+      this.list = newTodoList;
+      return newTodoList;
     });
   }
 
@@ -188,7 +195,7 @@ export class TodoCreator
     colorizeBtn.onClick.add(() => {
       colorizeBtn.active = !colorizeBtn.active;
       if (colorizeBtn.active) {
-        for (const todo of this._list) {
+        for (const todo of this.list) {
           const fragmentMapLength = Object.keys(todo.fragmentMap).length;
           if (fragmentMapLength === 0) return;
           highlighter.highlightByID(
@@ -215,11 +222,11 @@ export class TodoCreator
 
   async dispose() {
     this.uiElement.dispose();
-    this._list = [];
+    this.list = [];
     this.enabled = false;
   }
 
   get(): ToDo[] {
-    return this._list;
+    return this.list;
   }
 }
