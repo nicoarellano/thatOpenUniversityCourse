@@ -15,17 +15,24 @@ import { SimpleQTO } from "../../../bim-components/SimpleQTO";
 import { ProjectsManager } from "../../../classes/ProjectsManager";
 import { TodoCreator } from "../../../bim-components/TodoCreator";
 
+// Import Context
+
+export function ViewerProvider() {
+  return;
+}
+
 interface Props {
   project: Project;
 }
 
 export function IFCViewer() {
+  let viewer: OBC.Components;
   const setViewer = async () => {
     const projectsManager = new ProjectsManager();
 
     // OpenBIM Components Viewer 👀
     const models: FragmentsGroup[] = [];
-    const viewer = new OBC.Components();
+    viewer = new OBC.Components();
     const sceneComponent = new OBC.SimpleScene(viewer);
 
     viewer.scene = sceneComponent;
@@ -259,6 +266,9 @@ export function IFCViewer() {
 
   React.useEffect(() => {
     setViewer();
+    return () => {
+      viewer.dispose();
+    };
   }, []);
 
   return (
