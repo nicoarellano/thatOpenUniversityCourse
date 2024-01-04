@@ -1,4 +1,5 @@
 import * as OBC from "openbim-components";
+import todoPriorityColor from "../../../../utils/todoPriorityColor";
 
 export class TodoCard extends OBC.SimpleUIComponent {
   onCardClick = new OBC.Event();

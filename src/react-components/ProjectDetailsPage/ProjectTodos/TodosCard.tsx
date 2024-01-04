@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ToDoPriority } from "../../../bim-components/TodoCreator";
+import todoPriorityColor from "../../../utils/todoPriorityColor";
 
 interface Props {
   message: string;
@@ -9,13 +10,7 @@ interface Props {
 
 export function TodosCard(props: Props) {
   const { message, priority, date } = props;
-  let priorityColor: string;
-
-  priority === "Low"
-    ? (priorityColor = "yellow")
-    : priority === "High"
-    ? (priorityColor = "red")
-    : (priorityColor = "blue");
+  let priorityColor = todoPriorityColor(priority);
 
   return (
     <div
@@ -45,7 +40,7 @@ export function TodosCard(props: Props) {
               className="material-icons-round"
               style={{
                 padding: 10,
-                backgroundColor: priorityColor,
+                backgroundColor: `#${priorityColor}`,
                 borderRadius: "var(--border-radius)",
               }}
             >

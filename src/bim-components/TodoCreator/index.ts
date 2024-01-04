@@ -1,6 +1,7 @@
 import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { TodoCard } from "./src/TodoCard";
+import todoPriorityColor from "../../utils/todoPriorityColor";
 
 export type ToDoPriority = "Low" | "Normal" | "High";
 export interface ToDo {
@@ -38,13 +39,19 @@ export class TodoCreator
       OBC.FragmentHighlighter
     );
     highlighter.add(`${TodoCreator.uuid}-priority-Low`, [
-      new THREE.MeshStandardMaterial({ color: 0x59bc59 }),
+      new THREE.MeshStandardMaterial({
+        color: Number(`0x${todoPriorityColor("Low")}`),
+      }),
     ]);
     highlighter.add(`${TodoCreator.uuid}-priority-Normal`, [
-      new THREE.MeshStandardMaterial({ color: 0x597cff }),
+      new THREE.MeshStandardMaterial({
+        color: Number(`0x${todoPriorityColor("Normal")}`),
+      }),
     ]);
     highlighter.add(`${TodoCreator.uuid}-priority-High`, [
-      new THREE.MeshStandardMaterial({ color: 0xff7676 }),
+      new THREE.MeshStandardMaterial({
+        color: Number(`0x${todoPriorityColor("High")}`),
+      }),
     ]);
   }
 
