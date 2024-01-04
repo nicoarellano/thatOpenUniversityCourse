@@ -15,10 +15,24 @@ import { SimpleQTO } from "../../../bim-components/SimpleQTO";
 import { ProjectsManager } from "../../../classes/ProjectsManager";
 import { TodoCreator } from "../../../bim-components/TodoCreator";
 
-// Import Context
+interface IViewerContext {
+  viewer: OBC.Components | null;
+  setViewer: (viewer: OBC.Components | null) => void;
+}
 
-export function ViewerProvider() {
-  return;
+// Create context
+export const ViewerContext = React.createContext<IViewerContext>({
+  viewer: null,
+  setViewer: () => {},
+});
+
+export function ViewerProvider(props: { children: React.ReactNode }) {
+  const [viewer, setViewer] = React.useState<OBC.Components | null>(null);
+  return (
+    <ViewerContext.Provider value={{ viewer, setViewer }}>
+      {props.children}
+    </ViewerContext.Provider>
+  );
 }
 
 interface Props {
@@ -26,13 +40,14 @@ interface Props {
 }
 
 export function IFCViewer() {
+  const { setViewer } = React.useContext(ViewerContext);
   let viewer: OBC.Components;
-  const setViewer = async () => {
-    const projectsManager = new ProjectsManager();
-
-    // OpenBIM Components Viewer 👀
-    const models: FragmentsGroup[] = [];
+  const createViewer = async () => {
     viewer = new OBC.Components();
+    setViewer(viewer);
+
+    const models: FragmentsGroup[] = [];
+
     const sceneComponent = new OBC.SimpleScene(viewer);
 
     viewer.scene = sceneComponent;
@@ -240,7 +255,7 @@ export function IFCViewer() {
 
     const todoCreator = new TodoCreator(viewer);
     await todoCreator.setup();
-    todoCreator.onProjectCreated.add((todo) => console.log(todo));
+    // todoCreator.onProjectCreated.add((todo) => console.log(todo));
 
     const simpleQTO = new SimpleQTO(viewer);
     await simpleQTO.setup();
@@ -265,9 +280,10 @@ export function IFCViewer() {
   };
 
   React.useEffect(() => {
-    setViewer();
+    createViewer();
     return () => {
       viewer.dispose();
+      setViewer(null);
     };
   }, []);
 

@@ -9,6 +9,7 @@ import { ProjectsPage } from "./react-components/ProjectsPage";
 
 import { ProjectsManager } from "./classes/ProjectsManager";
 import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage";
+import { ViewerProvider } from "./react-components/ProjectDetailsPage/IFCViewer";
 
 const projectsManager = new ProjectsManager();
 
@@ -17,17 +18,19 @@ const appRoot = ReactDOM.createRoot(rootElement);
 appRoot.render(
   <>
     <Router.BrowserRouter>
-      <Sidebar />
-      <Router.Routes>
-        <Router.Route
-          path="/"
-          element={<ProjectsPage projectsManager={projectsManager} />}
-        ></Router.Route>
-        <Router.Route
-          path="/project"
-          element={<ProjectDetailsPage projectsManager={projectsManager} />}
-        ></Router.Route>
-      </Router.Routes>
+      <ViewerProvider>
+        <Sidebar />
+        <Router.Routes>
+          <Router.Route
+            path="/"
+            element={<ProjectsPage projectsManager={projectsManager} />}
+          ></Router.Route>
+          <Router.Route
+            path="/project"
+            element={<ProjectDetailsPage projectsManager={projectsManager} />}
+          ></Router.Route>
+        </Router.Routes>
+      </ViewerProvider>
     </Router.BrowserRouter>
   </>
 );
