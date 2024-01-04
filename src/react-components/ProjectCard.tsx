@@ -1,6 +1,9 @@
 import * as React from "react";
+import * as Router from "react-router-dom";
+
 import { Project } from "../classes/Project";
 import { ProjectsManager } from "../classes/ProjectsManager";
+import hexColorRange from "../utils/hexColorRange";
 
 interface Props {
   project: Project;
@@ -9,22 +12,20 @@ interface Props {
 export function ProjectCard(props: Props): React.ReactElement<Props> {
   const [projectsManager] = React.useState(new ProjectsManager());
 
-  const onDeleteProjectClick = () => {
+  const onDeleteProjectClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
     console.log(projectsManager.list);
     projectsManager.deleteProject(id);
   };
 
-  const {
-    id,
-    code,
-    name,
-    description,
-    userRole,
-    status,
-    cost,
-    progress,
-    color,
-  } = props.project;
+  const { project } = props;
+
+  const { id, code, name, description, userRole, status, cost, progress } =
+    project;
+
+  const progressColor = hexColorRange(project.progress);
 
   return (
     <div className="project-card">
@@ -48,7 +49,7 @@ export function ProjectCard(props: Props): React.ReactElement<Props> {
             style={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: color,
+              backgroundColor: progressColor,
               padding: "0.8rem",
               borderRadius: 8,
               aspectRatio: 1,
@@ -61,7 +62,7 @@ export function ProjectCard(props: Props): React.ReactElement<Props> {
             <p>{description}</p>
           </div>
         </div>
-        <div onClick={onDeleteProjectClick} className="icon">
+        <div onClick={(e) => onDeleteProjectClick(e)} className="icon">
           <span title="Delete project" className="material-symbols-rounded">
             delete
           </span>

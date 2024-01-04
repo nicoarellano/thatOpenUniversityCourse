@@ -11,12 +11,11 @@ export class ProjectsManager {
       id: crypto.randomUUID(),
       name: "Default Project",
       code: "NN",
-      description: "This is just a default app project",
+      description: "Default project description",
       status: "undefined",
       userRole: "undefined",
       finishDate: new Date(),
-      color: "#6b8ec6",
-      progress: 0,
+      progress: 66,
       cost: 0,
     });
   }
@@ -43,55 +42,6 @@ export class ProjectsManager {
     return project;
   }
 
-  private setDetailsPage(project: Project) {
-    const detailsPage = document.getElementById("project-details");
-    if (!detailsPage) return;
-
-    const detailAttributes = [
-      "name",
-      "description",
-      "code",
-      "status",
-      "cost",
-      "userRole",
-    ];
-
-    for (const attribute of detailAttributes) {
-      const name = detailsPage.querySelector(
-        `[data-project-info='${attribute}']`
-      );
-      if (name && (project[attribute] === 0 || project[attribute]))
-        name.textContent = project[attribute];
-    }
-    const cardName = detailsPage.querySelector(
-      `[data-project-info='cardName']`
-    );
-    if (cardName) cardName.textContent = project.name;
-
-    const cardDescription = detailsPage.querySelector(
-      `[data-project-info='cardDescription']`
-    );
-    if (cardDescription) cardDescription.textContent = project.description;
-
-    const code = detailsPage.querySelector(
-      `[data-project-info='code']`
-    ) as HTMLElement;
-    if (code) code.style.backgroundColor = project.color;
-
-    const progress = detailsPage.querySelector(
-      `[data-project-info='progress']`
-    ) as HTMLElement;
-    if (progress) {
-      progress.style.width = `${project.progress}%`;
-      progress.textContent = `${project.progress}%`;
-    }
-
-    const finishDate = detailsPage.querySelector(
-      `[data-project-info='finishDate']`
-    );
-    if (finishDate) finishDate.textContent = project.finishDate.toDateString();
-  }
-
   getProject(id: string) {
     const project = this.list.find((project) => {
       return project.id === id;
@@ -99,10 +49,29 @@ export class ProjectsManager {
     return project;
   }
 
+  filterProjects(value: string) {
+    const filteredProjects = this.list.filter((project) =>
+      project.name.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+    );
+    return filteredProjects;
+  }
+
   getProjectByName(name: string) {
     const project = this.list.find((project) => {
       return project.name === name;
     });
+    return project;
+  }
+
+  editProjectById(id: string) {
+    const project = this.list.find((project) => {
+      return project.id === id;
+    });
+
+    if (!(project && project instanceof Project)) return;
+
+    const newProject = { ...project, name: "NEW NAME" };
+    Object.assign(project, newProject);
     return project;
   }
 
