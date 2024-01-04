@@ -2,13 +2,17 @@ import * as React from "react";
 import { Project } from "../../classes/Project";
 import hexColorRange from "../../utils/hexColorRange";
 import { EditButton } from "./EditButton";
+import { ProjectsManager } from "../../classes/ProjectsManager";
 
 interface Props {
   project: Project;
+  projectsManager: ProjectsManager;
 }
 
 export function ProjectInformation(props: Props) {
   const { project } = props;
+
+  const progressColor = hexColorRange(project.progress);
   return (
     <div className="dashboard-card" style={{ padding: "2rem 0" }}>
       <div
@@ -26,7 +30,7 @@ export function ProjectInformation(props: Props) {
             justifyContent: "center",
             alignItems: "center",
             fontSize: 20,
-            backgroundColor: project.color,
+            backgroundColor: progressColor,
             aspectRatio: 1,
             borderRadius: "100%",
             padding: 12,
@@ -34,7 +38,7 @@ export function ProjectInformation(props: Props) {
         >
           {project.code}
         </p>
-        <EditButton id={project.id} />
+        <EditButton id={project.id} projectsManager={props.projectsManager} />
       </div>
       <div style={{ padding: "0 2rem" }}>
         <div>
@@ -111,7 +115,7 @@ export function ProjectInformation(props: Props) {
           <div
             style={{
               width: `${project.progress}%`,
-              backgroundColor: hexColorRange(project.progress),
+              backgroundColor: progressColor,
               padding: "4px 0",
               textAlign: "center",
             }}

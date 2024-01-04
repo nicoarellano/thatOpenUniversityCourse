@@ -6,6 +6,7 @@ import { ProjectHeader } from "./ProjectHeader";
 import { ProjectInformation } from "./ProjectInformation";
 import { ProjectTodos } from "./ProjectTodos";
 import { ProjectViewer } from "./ProjectViewer";
+import { WarningMessage } from "../../utils/WarningMessage";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -16,15 +17,11 @@ export function ProjectDetailsPage(props: Props) {
   const id = searchParams.get("id");
 
   if (!id)
-    return (
-      <p style={{ margin: "4rem" }}>⚠️ Project ID is needed to see this page</p>
-    );
+    return <WarningMessage message="Project ID is needed to see this page" />;
   const project = props.projectsManager.getProject(id as string);
   if (!project)
     return (
-      <p style={{ margin: "4rem" }}>
-        ⚠️ Project with ID: <i>'{id}'</i> wasn't found
-      </p>
+      <WarningMessage message={`Project with ID: '${id}' wasn't found'}`} />
     );
 
   return (
@@ -33,9 +30,19 @@ export function ProjectDetailsPage(props: Props) {
         <ProjectHeader project={project} />
         <div className="main-page-content">
           <div
-            style={{ display: "flex", flexDirection: "column", rowGap: "2rem" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+
+              rowGap: "2rem",
+              position: "relative",
+              minHeight: "100%",
+            }}
           >
-            <ProjectInformation project={project} />
+            <ProjectInformation
+              project={project}
+              projectsManager={props.projectsManager}
+            />
             <ProjectTodos project={project} />
           </div>
           <ProjectViewer project={project} />

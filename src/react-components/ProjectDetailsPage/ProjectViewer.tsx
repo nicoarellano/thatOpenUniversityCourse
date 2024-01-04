@@ -10,7 +10,7 @@ export function ProjectViewer(props: Props) {
     <div
       id="viewer-container"
       className="dashboard-card"
-      style={{ minWidth: 0, position: "relative" }}
+      style={{ minWidth: 0, position: "relative", maxHeight: "100%" }}
     />
   );
 }
