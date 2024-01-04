@@ -5,7 +5,7 @@ import { ProjectsManager } from "../../classes/ProjectsManager";
 import { ProjectHeader } from "./ProjectHeader";
 import { ProjectInformation } from "./ProjectInformation";
 import { ProjectTodos } from "./ProjectTodos";
-import { ProjectViewer } from "./ProjectViewer/ProjectViewer";
+import { ProjectViewer } from "./ProjectViewer";
 import { WarningMessage } from "../../utils/WarningMessage";
 
 interface Props {
